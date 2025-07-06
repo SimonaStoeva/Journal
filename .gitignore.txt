@@ -1,0 +1,17 @@
+# Ignore build folders
+bin/
+obj/
+
+# Ignore Rider and VS project files
+.idea/
+*.user
+*.suo
+/Models/
+
+# Ignore SQLite database if not needed
+*.db
+*.sqlite
+
+# Ignore system files
+Thumbs.db
+.DS_Store
