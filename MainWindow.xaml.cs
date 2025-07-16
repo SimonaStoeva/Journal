@@ -22,14 +22,14 @@ namespace Journal
         {
             HomeGrid.Visibility = Visibility.Collapsed; 
             MainFrame.Visibility = Visibility.Visible;  
-            //MainFrame.Navigate(new LoginPage());        
+            MainFrame.Navigate(new LoginPage());        
         }
 
         public void Reg_Click(object sender, RoutedEventArgs e)
         {
             HomeGrid.Visibility = Visibility.Collapsed; 
             MainFrame.Visibility = Visibility.Visible;  
-            //MainFrame.Navigate(new RegistrationPage()); 
+            MainFrame.Navigate(new RegistrationPage()); 
         }
 
     }
