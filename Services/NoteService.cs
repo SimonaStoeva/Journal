@@ -95,7 +95,7 @@ namespace Journal.Services
             return notes;
         }
 
-        public static List<Note> FilterByDate(int userId, DateTime startDate, DateTime endDate) 
+        public List<Note> FilterByDate(int userId, DateTime startDate, DateTime endDate) 
         {
             var notes = new List<Note>();
             string query = "SELECT Id, Title, Content, CreatedAt FROM Note WHERE UserId = @UserId AND (CreatedAt BETWEEN @StartDate AND @EndDate)";
@@ -125,7 +125,7 @@ namespace Journal.Services
         public List<Note> GetNotesByUser(int userId)
         {
             var notes = new List<Note>();
-            string query = "SELECT Id, Title, Content, CreatedAt FROM Note WHERE UserId = @UserId";
+            string query = "SELECT Id, Title, Content, CreatedAt, CategoryId FROM Note WHERE UserId = @UserId";
 
             using (var connection = DatabaseManager.GetConnection())
             {
@@ -173,7 +173,7 @@ namespace Journal.Services
             return notes;
         }
 
-        private static Note ReadNote(SQLiteDataReader reader, int userId, bool includeCategory = false)
+        private Note ReadNote(SQLiteDataReader reader, int userId, bool includeCategory = false)
         {
             return new Note
             {
