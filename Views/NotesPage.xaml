@@ -70,7 +70,7 @@
                 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
                     <TextBlock FontSize="14" Foreground="#5A2E0C" VerticalAlignment="Center">
-                        <Hyperlink Click="Logout_Click" TextDecorations="Underline"  FontWeight="SemiBold">Logout</Hyperlink>
+                        <Hyperlink Click="Logout_Click" TextDecorations="Underline"  FontWeight="SemiBold" Foreground="#5A2E0C">Logout</Hyperlink>
                     </TextBlock>
                 </StackPanel>
 
@@ -97,6 +97,12 @@
                                        FontSize="14" Margin="10,4,0,0" VerticalAlignment="Top"
                                        IsHitTestVisible="False" Visibility="Visible"/>
                         </Grid>
+                        
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <DatePicker x:Name="StartDatePicker" Width="120" Margin="0,0,5,0"/>
+                            <DatePicker x:Name="EndDatePicker" Width="120" Margin="0,0,5,0"/>
+                            <Button Style="{StaticResource WarmButtonStyle}" Content="Filter by date" Click="FilterByDate_Click"/>
+                        </StackPanel>
 
                         <ListBox Name="NotesListView"
                                  Style="{StaticResource RoundedListBoxStyle}"

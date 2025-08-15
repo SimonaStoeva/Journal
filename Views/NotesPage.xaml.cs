@@ -7,10 +7,10 @@ namespace Journal.Views
 {
     public partial class NotesPage : Page
     {
-        private int currentUserId;
+        private readonly int currentUserId;
         private Note currentNote;
-        private NoteService noteService = new NoteService();
-        private CategoryService categoryService = new CategoryService();
+        private readonly NoteService noteService = new NoteService();
+        private readonly CategoryService categoryService = new CategoryService();
 
         public NotesPage(int userId)
         {
@@ -22,13 +22,7 @@ namespace Journal.Views
 
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
-            var mainWindow = Application.Current.MainWindow as MainWindow;
-            mainWindow?.Logout();
-        }
-        
-        private void LoadNotes()
-        {
-            NotesListView.ItemsSource = noteService.GetNotesByUser(currentUserId);
+            (Application.Current.MainWindow as MainWindow)?.Logout();
         }
 
         private void LoadCategories()
@@ -39,7 +33,12 @@ namespace Journal.Views
             CategoryComboBox.ItemsSource = categories;
             CategoryComboBox.SelectedIndex = 0;
         }
-
+        
+        private void LoadNotes()
+        {
+            NotesListView.ItemsSource = noteService.GetNotesByUser(currentUserId);
+        }
+        
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string searchText = SearchBox.Text.Trim().ToLower();
@@ -53,6 +52,46 @@ namespace Journal.Views
                 : noteService.FilterByKeyword(currentUserId, searchText);
         }
 
+        private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CategoryComboBox.SelectedItem is Category selectedCategory)
+            {
+                NotesListView.ItemsSource = selectedCategory.Id == 0
+                    ? noteService.GetNotesByUser(currentUserId)
+                    : noteService.GetNotesByCategory(currentUserId, selectedCategory.Id);
+            }
+        }
+        private void FilterByDate_Click(object sender, RoutedEventArgs e)
+        {
+            if (!StartDatePicker.SelectedDate.HasValue || !EndDatePicker.SelectedDate.HasValue)
+            {
+                MessageBox.Show("Please select both start and end dates.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var startDate = StartDatePicker.SelectedDate.Value;
+            var endDate = EndDatePicker.SelectedDate.Value.AddDays(1).AddTicks(-1);
+
+            // Взимаме всички бележки на текущия потребител
+            var notes = noteService.GetNotesByUser(currentUserId);
+
+            // Филтрираме по дата
+            notes = notes
+                .Where(n => n.CreatedAt >= startDate && n.CreatedAt <= endDate)
+                .ToList();
+
+            // Ако е избрана категория различна от "All notes", филтрираме и по категория
+            if (CategoryComboBox.SelectedItem is Category selectedCategory && selectedCategory.Id != 0)
+            {
+                notes = notes
+                    .Where(n => n.CategoryId.HasValue && n.CategoryId.Value == selectedCategory.Id)
+                    .ToList();
+            }
+
+            NotesListView.ItemsSource = notes;
+        }
+
+
         private void NotesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (NotesListView.SelectedItem is Note selectedNote)
@@ -62,9 +101,21 @@ namespace Journal.Views
                 ContentTextBox.Text = currentNote.Content;
                 NoteDateTextBlock.Text = currentNote.CreatedAt.ToString("g");
 
-                CategoryComboBox.SelectedItem = CategoryComboBox.Items
-                    .Cast<Category>()
-                    .FirstOrDefault(c => c.Id == currentNote.CategoryId);
+                // Временно спираме SelectionChanged
+                CategoryComboBox.SelectionChanged -= CategoryComboBox_SelectionChanged;
+
+                if (currentNote.CategoryId.HasValue)
+                {
+                    CategoryComboBox.SelectedItem = CategoryComboBox.Items
+                        .Cast<Category>()
+                        .FirstOrDefault(c => c.Id == currentNote.CategoryId.Value);
+                }
+                else
+                {
+                    CategoryComboBox.SelectedIndex = 0; // All notes
+                }
+
+                CategoryComboBox.SelectionChanged += CategoryComboBox_SelectionChanged;
             }
         }
 
@@ -147,21 +198,10 @@ namespace Journal.Views
                     MessageBox.Show("Category added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     LoadCategories();
                 }
-                
                 else
                 {
                     MessageBox.Show("Failed to add category.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-            }
-        }
-
-        private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (CategoryComboBox.SelectedItem is Category selectedCategory)
-            {
-                NotesListView.ItemsSource = selectedCategory.Id == 0
-                    ? noteService.GetNotesByUser(currentUserId)
-                    : noteService.GetNotesByCategory(currentUserId, selectedCategory.Id);
             }
         }
     }

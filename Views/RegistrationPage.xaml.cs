@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Journal
+namespace Journal.Views
 {
     public partial class RegistrationPage : Page
     {
