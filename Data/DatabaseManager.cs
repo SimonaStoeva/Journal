@@ -36,8 +36,7 @@ namespace Journal.Data
                 {
                     command.ExecuteNonQuery();
                 }
-
-        // Създаваме Note таблицата
+                
                 string notesTable = @"CREATE TABLE IF NOT EXISTS Note (
                                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                                 Title TEXT,
