@@ -70,17 +70,12 @@ namespace Journal.Views
             }
 
             var startDate = StartDatePicker.SelectedDate.Value;
-            var endDate = EndDatePicker.SelectedDate.Value.AddDays(1).AddTicks(-1);
+            var endDate = EndDatePicker.SelectedDate.Value.AddDays(1).AddTicks(-1); 
 
-            // Взимаме всички бележки на текущия потребител
-            var notes = noteService.GetNotesByUser(currentUserId);
 
-            // Филтрираме по дата
-            notes = notes
-                .Where(n => n.CreatedAt >= startDate && n.CreatedAt <= endDate)
-                .ToList();
+            var notes = noteService.FilterByDate(currentUserId, startDate, endDate);
 
-            // Ако е избрана категория различна от "All notes", филтрираме и по категория
+
             if (CategoryComboBox.SelectedItem is Category selectedCategory && selectedCategory.Id != 0)
             {
                 notes = notes
@@ -101,7 +96,6 @@ namespace Journal.Views
                 ContentTextBox.Text = currentNote.Content;
                 NoteDateTextBlock.Text = currentNote.CreatedAt.ToString("g");
 
-                // Временно спираме SelectionChanged
                 CategoryComboBox.SelectionChanged -= CategoryComboBox_SelectionChanged;
 
                 if (currentNote.CategoryId.HasValue)
@@ -112,7 +106,7 @@ namespace Journal.Views
                 }
                 else
                 {
-                    CategoryComboBox.SelectedIndex = 0; // All notes
+                    CategoryComboBox.SelectedIndex = 0;
                 }
 
                 CategoryComboBox.SelectionChanged += CategoryComboBox_SelectionChanged;
