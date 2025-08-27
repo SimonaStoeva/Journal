@@ -27,26 +27,7 @@ namespace Journal.Services
 
             return categories;
         }
-
-        public Category GetCategoryById(int categoryId)
-        {
-            using (var connection = DatabaseManager.GetConnection())
-            {
-                connection.Open();
-                var command = new SQLiteCommand("SELECT * FROM Category WHERE Id = @Id", connection);
-                command.Parameters.AddWithValue("@Id", categoryId);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        return ReadCategory(reader);
-                    }
-                }
-            }
-
-            return null;
-        }
+        
 
         public bool AddCategory(Category category)
         {
