@@ -24,21 +24,6 @@ namespace Journal.Services
                     try
                     {
                         command.ExecuteNonQuery();
-                        string selectQuery = "SELECT Username FROM User";
-                        using (var selectCommand = new SQLiteCommand(selectQuery, connection))
-                        using (var reader = selectCommand.ExecuteReader())
-                        {
-                            string allUsers = "Users in database:\n";
-                            int count = 0;
-
-                            while (reader.Read())
-                            {
-                                allUsers += "- " + reader.GetString(0) + "\n";
-                                count++;
-                            }
-
-                           
-                        }
                         return true;
                     }
                     catch
